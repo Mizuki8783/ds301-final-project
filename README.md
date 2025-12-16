@@ -42,23 +42,32 @@ This project analyzes credit card customer data to predict the likelihood of def
 ## 📁 Project Structure
 
 ```
-ds301-midterm/
+ds301-final-project/
 │
 ├── data/
-│   └── UCI_Credit_Card.csv          # Raw dataset (30,000 records)
-│
-├── models/
-│   └── best_decision_tree_model.pkl # Trained model (saved via joblib)
-│
-├── create_model.ipynb                # Main notebook with full ML pipeline
-└── README.md                         # This file
+│   └── UCI_Credit_Card.csv                # Primary dataset
+├── models/                                # Saved models (joblib/pickle)
+│   ├── decision_tree_model.pkl            # Tuned Decision Tree (UCI)
+│   ├── xgboost_model.pkl                  # Tuned XGBoost (UCI)
+│   ├── lightgbm_model.pkl                 # Tuned LightGBM (UCI)
+│   ├── logistic_regression_model.pkl      # HMEQ experiment
+│   └── svm_model.pkl                      # HMEQ experiment
+├── notebooks/
+│   ├── 01_create_models.ipynb             # UCI preprocessing + Decision Tree vs LightGBM
+│   ├── 02_create_models_with_similar_dataset.ipynb  # HMEQ dataset (not included) + classical models
+│   ├── 03_XGBoost.ipynb                   # Tuned XGBoost on UCI dataset
+│   └── 04_lightGBM.ipynb                  # LightGBM deep dive + comparison tables
+├── presentation.md                        # Slide deck content
+├── pyproject.toml                         # Python 3.12 dependencies (pandas, scikit-learn, xgboost, lightgbm)
+├── uv.lock
+└── README.md
 ```
 
 ### Directory Details
 
 - **`data/`**: Contains the UCI Credit Card dataset in CSV format
 - **`models/`**: Stores the trained machine learning model as a pickle file
-- **`create_model.ipynb`**: The main Jupyter notebook containing all code for data processing, model training, and evaluation
+- **`notebooks/`**: Contains jupyter noterbooks where we processed the data and created various models
 
 ## 🚀 How to Run the Code
 
@@ -73,62 +82,28 @@ Ensure you have the following installed:
 
 1. **Clone the repository** (if applicable):
 ```bash
-cd ds301-midterm
+cd ds301-final-project
 ```
 
-2. **Install dependencies**:
+1. **Install dependencies** (Python 3.12):
+   - With `uv` (recommended): `uv sync`
+   - Or with pip: `pip install pandas numpy scikit-learn xgboost lightgbm ipykernel`
+2. **Launch notebooks:** `uv run jupyter lab` (or `jupyter notebook`) and open any file in `notebooks/`.
+3. **Data prep notes (UCI):**
+   - No missing values; outliers capped at 1st/99th percentiles
+   - EDUCATION recoded (0/5/6 → 4), MARRIAGE recoded (0 → 3), SEX validated
+   - Engineered `GENDER_MARRIAGE`; excluded divorced women (232 rows)
+   - Stratified 70/30 train-test split preserves the 22.1% default rate
+4. **Optional HMEQ run:** Place `hmeq.csv` in the project root to execute `02_create_models_with_similar_dataset.ipynb`.
 
-If using `uv` (recommended):
-```bash
-uv sync
-```
-
-Or install packages manually:
-```bash
-pip install pandas numpy scikit-learn joblib jupyter
-```
-
-### Running the Notebook
-
-1. **Start Jupyter Notebook**:
-```bash
-jupyter notebook
-```
-
-2. **Open the notebook**:
-   - Navigate to `create_model.ipynb` in the Jupyter interface
-   - Click to open
-
-3. **Run all cells**:
-   - Option 1: Click `Cell` → `Run All` in the menu
-   - Option 2: Run cells sequentially using `Shift + Enter`
-
-### Expected Outputs
-
-The notebook will:
-1. Load and inspect the dataset
-2. Clean and preprocess the data
-3. Engineer new features
-4. Split data into training and test sets
-5. Train a Decision Tree model with hyperparameter tuning (this may take several minutes)
-6. Display model performance metrics
-7. Save the trained model to `models/best_decision_tree_model.pkl`
-
-### Using the Trained Model
-
-To load and use the saved model:
-
+### Loading a Saved Model
 ```python
 import joblib
-import pandas as pd
-
-# Load the model
-model = joblib.load('models/best_decision_tree_model.pkl')
-
-# Make predictions on new data
-# predictions = model.predict(X_new)
-# probabilities = model.predict_proba(X_new)
+model = joblib.load("models/lightgbm_model.pkl")
+# preds = model.predict(X_new)
+# probs = model.predict_proba(X_new)[:, 1]
 ```
+
 
 ## 📊 Dataset Information
 
@@ -148,42 +123,29 @@ model = joblib.load('models/best_decision_tree_model.pkl')
 - Default rate: 22.1% of records
 
 ## 🎯 Model Performance
+| Model          | Accuracy | Precision | Recall | F1-score | ROC-AUC |
+|----------------|----------|-----------|--------|----------|---------|
+| Decision Tree  | 0.781    | 0.504     | 0.550  | 0.526    | 0.748   |
+| XGBoost        | 0.796    | 0.537     | 0.560  | 0.548    | 0.778   |
+| LightGBM       | 0.789    | 0.521     | 0.582  | 0.550    | 0.779   |
 
-### Confusion Matrix
-```
-                 Predicted
-                No Default  Default
-Actual
-No Default        5,885     1,069
-Default             890     1,087
-```
+LightGBM offers the best recall and F1, while XGBoost edges slightly on accuracy. Confusion matrices and full reports are in the notebooks.
 
-### Classification Report
-```
-              Precision  Recall  F1-Score  Support
-No Default       0.87     0.85     0.86     6,954
-Default          0.50     0.55     0.53     1,977
+## Results (HMEQ dataset experiment)
+| Model                  | Accuracy | Precision | Recall | F1-score | ROC-AUC |
+|------------------------|----------|-----------|--------|----------|---------|
+| Decision Tree          | 0.876    | 0.689     | 0.689  | 0.689    | 0.790   |
+| Logistic Regression    | 0.872    | 0.735     | 0.559  | 0.635    | 0.881   |
+| Support Vector Machine | 0.902    | 0.838     | 0.630  | 0.719    | 0.912   |
 
-Accuracy                           0.78     8,931
-```
+## Presentation
+Full narrative and visuals: **[Credit Card Default Prediction - Canva Presentation](https://www.canva.com/design/DAG4mQSIvQc/IniMlac3Aq5eBG27yW9t9Q/edit)**
 
-## 🎨 Presentation
-
-View the full project presentation here:
-**[Credit Card Default Prediction - Canva Presentation](https://www.canva.com/design/DAG4mQSIvQc/IniMlac3Aq5eBG27yW9t9Q/edit)**
-
-
-## 👥 Contributors
-
+## Contributors
 - Júlia Martins Santana Figueiredo
 - Yuki Okabe
 - Hajime Imaizumi
 - Mizuki Nakano
 
-## 📄 License
-
-This project uses the UCI Credit Card dataset, which is publicly available for research purposes.
-
----
-
-*For questions or issues, please refer to the presentation or contact the project team.*
+## License
+Uses the UCI Credit Card dataset for research purposes. Refer to the dataset terms for usage details.
