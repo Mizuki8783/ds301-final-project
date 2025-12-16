@@ -122,16 +122,17 @@ model = joblib.load("models/lightgbm_model.pkl")
 - **default.payment.next.month**: Binary (1=default, 0=no default)
 - Default rate: 22.1% of records
 
-## 🎯 Model Performance
+## 🎯 Model Performance (all notebooks)
+**UCI Credit Card dataset** — `notebooks/01_create_models.ipynb`, `03_XGBoost.ipynb`, `04_lightGBM.ipynb`
 | Model          | Accuracy | Precision | Recall | F1-score | ROC-AUC |
 |----------------|----------|-----------|--------|----------|---------|
 | Decision Tree  | 0.781    | 0.504     | 0.550  | 0.526    | 0.748   |
 | XGBoost        | 0.796    | 0.537     | 0.560  | 0.548    | 0.778   |
 | LightGBM       | 0.789    | 0.521     | 0.582  | 0.550    | 0.779   |
 
-LightGBM offers the best recall and F1, while XGBoost edges slightly on accuracy. Confusion matrices and full reports are in the notebooks.
+LightGBM offers the best recall and F1 on UCI, while XGBoost edges slightly on accuracy.
 
-## Results (HMEQ dataset experiment)
+**HMEQ dataset experiment** — `notebooks/02_create_models_with_similar_dataset.ipynb` (requires `hmeq.csv`)
 | Model                  | Accuracy | Precision | Recall | F1-score | ROC-AUC |
 |------------------------|----------|-----------|--------|----------|---------|
 | Decision Tree          | 0.876    | 0.689     | 0.689  | 0.689    | 0.790   |
