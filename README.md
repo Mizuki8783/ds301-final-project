@@ -140,7 +140,7 @@ LightGBM offers the best recall and F1 on UCI, while XGBoost edges slightly on a
 | Support Vector Machine | 0.902    | 0.838     | 0.630  | 0.719    | 0.912   |
 
 ## Presentation
-Check out `Presentation Slides.pdf`
+Check out `Presentation Slides.pdf` or visit [this link](https://www.canva.com/design/DAG4mQSIvQc/IniMlac3Aq5eBG27yW9t9Q/edit?utm_content=DAG4mQSIvQc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ## Contributors
 - Júlia Martins Santana Figueiredo
